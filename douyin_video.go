@@ -49,7 +49,7 @@ func (v *video) Upload(openId, accessToken, filename string, f io.Reader) (vu *V
 // 该接口用于分片上传视频文件到文件服务器，先初始化上传获取upload_id。该接口适用于抖音。
 // https://open.douyin.com/platform/doc/6848798087398393859
 func (v *video) PartInit(openId, accessToken string) (vpi *VideoPartInit, err error) {
-	vpi = VideoPartInit{}
+	vpi = &VideoPartInit{}
 
 	params := url.Values{}
 	params.Add("open_id", openId)           // 通过/oauth/access_token/获取，用户唯一标志
