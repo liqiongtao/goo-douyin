@@ -80,7 +80,7 @@ func (u *user) FansList(openId, accessToken string, cursor, count int64) (fl *Fa
 		goo_log.WithTag(tag, "fans-list").Error(err)
 		return
 	}
-	if err := json.Unmarshal(buf, fl); err != nil {
+	if err = json.Unmarshal(buf, fl); err != nil {
 		goo_log.WithField("result", string(buf)).WithTag(tag, "fans-list").Error(err)
 		return
 	}

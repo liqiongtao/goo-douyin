@@ -62,7 +62,7 @@ func (o *oauth) Qrcode(scope, redirectUrl string) (qr *Qrcode, state string, err
 		goo_log.WithTag(tag, "oauth-get-qrcode").Error(err)
 		return nil, "", err
 	}
-	if err := json.Unmarshal(buf, qr); err != nil {
+	if err = json.Unmarshal(buf, qr); err != nil {
 		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-get-qrcode").Error(err.Error())
 		return nil, "", err
 	}
@@ -100,7 +100,7 @@ func (o *oauth) accessToken(code, baseUrl string) (at *AccessToken, err error) {
 		goo_log.WithTag(tag, "oauth-access-token").Error(err)
 		return
 	}
-	if err := json.Unmarshal(buf, at); err != nil {
+	if err = json.Unmarshal(buf, at); err != nil {
 		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-access-token").Error(err)
 		return
 	}
@@ -179,7 +179,7 @@ func (o *oauth) clientToken(baseUrl string) (ct *ClientToken, err error) {
 		goo_log.WithTag(tag, "oauth-client-token").Error(err)
 		return
 	}
-	if err := json.Unmarshal(buf, ct); err != nil {
+	if err = json.Unmarshal(buf, ct); err != nil {
 		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-client-token").Error(err)
 		return
 	}
@@ -231,7 +231,7 @@ func (o *oauth) refreshAccessToken(refreshToken, baseUrl string) (rt *RefreshTok
 		goo_log.WithTag(tag, "oauth-refresh-token").Error(err)
 		return
 	}
-	if err := json.Unmarshal(buf, rt); err != nil {
+	if err = json.Unmarshal(buf, rt); err != nil {
 		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-refresh-token").Error(err)
 		return
 	}
