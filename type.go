@@ -20,6 +20,25 @@ type Extra struct {
 	Now            int64  `json:"now"`
 	Logid          string `json:"logid"`
 }
+type Qrcode struct {
+	Data struct {
+		Qrcode      string `json:"qrcode"`
+		Token       string `json:"token"`
+		ErrorCode   int    `json:"error_code"`
+		Description string `json:"description"`
+	} `json:"data"`
+	Message string `json:"message"`
+}
+
+type CheckQrcode struct {
+	Data struct {
+		RedirectUrl string `json:"redirect_url"`
+		Status      string `json:"status"`
+		ErrorCode   int    `json:"error_code"`
+		Description string `json:"description"`
+	} `json:"data"`
+	Message string `json:"message"`
+}
 
 type AccessToken struct {
 	Data struct {

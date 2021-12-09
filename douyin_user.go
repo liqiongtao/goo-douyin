@@ -25,19 +25,19 @@ func (u *user) userInfo(openId, accessToken, baseUrl string) (ui *UserInfo, err 
 	params.Add("access_token", accessToken) // 调用/oauth/access_token/生成的token，此token需要用户授权
 
 	urlStr := fmt.Sprintf("%s/oauth/userinfo/?%s", baseUrl, params.Encode())
-	goo_log.WithField("tag", fmt.Sprintf("%s-", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "oauth-userinfo").Debug()
 
 	var buf []byte
 	if buf, err = goo_http_request.Get(urlStr); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "oauth-userinfo").Error(err)
 		return
 	}
 	if err = json.Unmarshal(buf, ui); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-userinfo").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", ui).WithField("tag", fmt.Sprintf("%s-", tag)).Debug()
+	goo_log.WithField("result", ui).WithTag(tag, "oauth-userinfo").Debug()
 
 	if ui.Data.ErrorCode != 0 {
 		err = errors.New(ui.Data.Description)
@@ -73,19 +73,19 @@ func (u *user) FansList(openId, accessToken string, cursor, count int64) (fl *Fa
 	params.Add("count", fmt.Sprintf("%d", count))   // 每页数量
 
 	urlStr := fmt.Sprintf("%s/fans/list/?%s", base_url_douyin, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-fans-list", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "fans-list").Debug()
 
 	var buf []byte
 	if buf, err = goo_http_request.Get(urlStr); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-fans-list", tag)).Error()
+		goo_log.WithTag(tag, "fans-list").Error(err)
 		return
 	}
 	if err := json.Unmarshal(buf, fl); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-fans-list", tag)).Error()
+		goo_log.WithField("result", string(buf)).WithTag(tag, "fans-list").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", fl).WithField("tag", fmt.Sprintf("%s-fans-list", tag)).Debug()
+	goo_log.WithField("result", fl).WithTag(tag, "fans-list").Debug()
 
 	if fl.Data.ErrorCode != 0 {
 		err = errors.New(fl.Extra.Description + ":" + fl.Extra.SubDescription)
@@ -106,19 +106,19 @@ func (u *user) FollowingList(openId, accessToken string, cursor, count int64) (f
 	params.Add("count", fmt.Sprintf("%d", count))   // 每页数量
 
 	urlStr := fmt.Sprintf("%s/following/list/?%s", base_url_douyin, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-following-list", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "following-list").Debug()
 
 	var buf []byte
 	if buf, err = goo_http_request.Get(urlStr); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-following-list", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "following-list").Error(err)
 		return nil, err
 	}
 	if err = json.Unmarshal(buf, fl); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-following-list", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "following-list").Error(err)
 		return nil, err
 	}
 
-	goo_log.WithField("result", fl).WithField("tag", fmt.Sprintf("%s-following-list", tag)).Debug()
+	goo_log.WithField("result", fl).WithTag(tag, "following-list").Debug()
 
 	if fl.Data.ErrorCode != 0 {
 		err = errors.New(fl.Extra.Description + ":" + fl.Extra.SubDescription)

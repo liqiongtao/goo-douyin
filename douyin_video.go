@@ -29,15 +29,15 @@ func (v *video) Upload(openId, accessToken, filename string, f io.Reader) (vu *V
 
 	var buf []byte
 	if buf, err = goo_http_request.Upload(urlStr, "video", filename, f, nil); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-video-upload", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "video-upload").Error(err)
 		return nil, err
 	}
 	if err = json.Unmarshal(buf, vu); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-video-upload", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "video-upload").Error(err)
 		return nil, err
 	}
 
-	goo_log.WithField("result", vu).WithField("tag", fmt.Sprintf("%s-video-upload", tag)).Debug()
+	goo_log.WithField("result", vu).WithTag(tag, "video-upload").Debug()
 
 	if vu.Data.ErrorCode != 0 {
 		err = errors.New(vu.Data.Description + ":" + vu.Extra.SubDescription)
@@ -59,15 +59,15 @@ func (v *video) PartInit(openId, accessToken string) (vpi *VideoPartInit, err er
 
 	var buf []byte
 	if buf, err = goo_http_request.PostJson(urlStr, []byte{}); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-video-part-init", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "video-part-init").Error(err)
 		return
 	}
 	if err = json.Unmarshal(buf, vpi); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-video-part-init", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "video-part-init").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", vpi).WithField("tag", fmt.Sprintf("%s-video-part-init", tag)).Debug()
+	goo_log.WithField("result", vpi).WithTag(tag, "video-part-init").Debug()
 
 	if vpi.Data.ErrorCode != 0 {
 		err = errors.New(vpi.Data.Description + ":" + vpi.Extra.SubDescription)
@@ -91,15 +91,15 @@ func (v *video) PartUpload(openId, accessToken, filename string, f io.Reader, up
 
 	var buf []byte
 	if buf, err = goo_http_request.Upload(urlStr, "video", filename, f, nil); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-video-part-upload", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "video-part-upload").Error(err)
 		return
 	}
 	if err = json.Unmarshal(buf, rst); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-video-part-upload", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "video-part-upload").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", rst).WithField("tag", fmt.Sprintf("%s-video-part-upload", tag)).Debug()
+	goo_log.WithField("result", rst).WithTag(tag, "video-part-upload").Debug()
 
 	if rst.Data.ErrorCode != 0 {
 		err = errors.New(rst.Data.Description + ":" + rst.Extra.SubDescription)
@@ -122,15 +122,15 @@ func (v *video) PartComplete(openId, accessToken, uploadId string) (vu *VideoUpl
 
 	var buf []byte
 	if buf, err = goo_http_request.PostJson(urlStr, []byte{}); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-video-part-complete", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "video-part-complete").Error(err)
 		return nil, err
 	}
 	if err = json.Unmarshal(buf, vu); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-video-part-complete", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "video-part-complete").Error(err)
 		return nil, err
 	}
 
-	goo_log.WithField("result", vu).WithField("tag", fmt.Sprintf("%s-video-part-complete", tag)).Debug()
+	goo_log.WithField("result", vu).WithTag(tag, "video-part-complete").Debug()
 
 	if vu.Data.ErrorCode != 0 {
 		err = errors.New(vu.Data.Description + ":" + vu.Extra.SubDescription)
@@ -152,15 +152,15 @@ func (v *video) Create(openId, accessToken string, data VideoCreateData) (vc *Vi
 
 	var buf []byte
 	if buf, err = goo_http_request.PostJson(urlStr, data.Byte()); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-video-create", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "video-create").Error(err)
 		return
 	}
 	if err = json.Unmarshal(buf, vc); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-video-create", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "video-create").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", vc).WithField("tag", fmt.Sprintf("%s-video-create", tag)).Debug()
+	goo_log.WithField("result", vc).WithTag(tag, "video-create").Debug()
 
 	if vc.Data.ErrorCode != 0 {
 		err = errors.New(vc.Data.Description + ":" + vc.Extra.SubDescription)

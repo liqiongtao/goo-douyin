@@ -28,7 +28,7 @@ func (o *oauth) platformConnect(scope, optionalScope, redirectUri, baseUrl strin
 	params.Add("state", goo_utils.NonceStr())
 
 	urlStr := fmt.Sprintf("%s/platform/oauth/connect/?%s", baseUrl, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-platform-oauth-connect", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "platform-oauth-connect").Debug()
 
 	return urlStr
 }
@@ -41,6 +41,41 @@ func (o *oauth) PlatformConnectByDouYin(scope, optionalScope, redirectUri string
 // 抖音获取授权码(code) - 西瓜
 func (o *oauth) PlatformConnectByXiGua(scope, optionalScope, redirectUri string) string {
 	return o.platformConnect(scope, optionalScope, redirectUri, base_url_xigua)
+}
+
+// 二维码
+func (o *oauth) Qrcode(scope, redirectUrl string) (qr *Qrcode, state string, err error) {
+	qr = &Qrcode{}
+	state = goo_utils.NonceStr()
+
+	params := url.Values{}
+	params.Add("client_key", o.clientKey)
+	params.Add("scope", scope) // 应用授权作用域,多个授权作用域以英文逗号（,）分隔
+	params.Add("next", redirectUrl)
+	params.Add("state", state)
+
+	urlStr := fmt.Sprintf("%s/oauth/get_qrcode/?%s", base_url_douyin, params.Encode())
+	goo_log.WithField("url", urlStr).WithTag(tag, "oauth-get-qrcode").Debug()
+
+	var buf []byte
+	if buf, err = goo_http_request.Get(urlStr); err != nil {
+		goo_log.WithTag(tag, "oauth-get-qrcode").Error(err)
+		return nil, "", err
+	}
+	if err := json.Unmarshal(buf, qr); err != nil {
+		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-get-qrcode").Error(err.Error())
+		return nil, "", err
+	}
+
+	goo_log.WithField("result", qr).WithTag(tag, "oauth-get-qrcode").Debug()
+
+	if qr.Message != "success" {
+		err = errors.New(qr.Data.Description)
+		return
+	}
+
+	qr.Data.Qrcode = fmt.Sprintf("data:image/png;base64,%s", qr.Data.Qrcode)
+	return
 }
 
 // 获取access_token
@@ -58,19 +93,19 @@ func (o *oauth) accessToken(code, baseUrl string) (at *AccessToken, err error) {
 	params.Add("grant_type", "authorization_code")
 
 	urlStr := fmt.Sprintf("%s/oauth/access_token/?%s", baseUrl, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-oauth-access_token", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "oauth-access-token").Debug()
 
 	var buf []byte
 	if buf, err = goo_http_request.Get(urlStr); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-oauth-access_token", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "oauth-access-token").Error(err)
 		return
 	}
 	if err := json.Unmarshal(buf, at); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-oauth-access_token", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-access-token").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", at).WithField("tag", fmt.Sprintf("%s-oauth-access_token", tag)).Debug(err.Error())
+	goo_log.WithField("result", at).WithTag(tag, "oauth-access-token").Debug()
 
 	if at.Data.ErrorCode != 0 {
 		err = errors.New(at.Data.Description)
@@ -105,19 +140,19 @@ func (o *oauth) RenewRefreshToken(refreshToken string) (rt *RenewRefreshToken, e
 	params.Add("refresh_token", refreshToken)
 
 	urlStr := fmt.Sprintf("%s/oauth/renew_refresh_token/?%s", base_url_douyin, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-oauth-renew_refresh_token", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "oauth-renew-refresh-token").Debug()
 
 	var buf []byte
 	if buf, err = goo_http_request.Get(urlStr); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-oauth-renew_refresh_token", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "oauth-renew-refresh-token").Error(err)
 		return
 	}
 	if err = json.Unmarshal(buf, rt); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-oauth-renew_refresh_token", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-renew-refresh-token").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", rt).WithField("tag", fmt.Sprintf("%s-oauth-renew_refresh_token", tag)).Debug()
+	goo_log.WithField("result", rt).WithTag(tag, "oauth-renew-refresh-token").Debug()
 
 	if rt.Data.ErrorCode != 0 {
 		err = errors.New(rt.Data.Description)
@@ -137,19 +172,19 @@ func (o *oauth) clientToken(baseUrl string) (ct *ClientToken, err error) {
 	params.Add("grant_type", "client_credential")
 
 	urlStr := fmt.Sprintf("%s/oauth/client_token/?%s", baseUrl, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-oauth-client_token", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "oauth-client-token").Debug()
 
 	var buf []byte
 	if buf, err = goo_http_request.Get(urlStr); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-oauth-client_token", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "oauth-client-token").Error(err)
 		return
 	}
 	if err := json.Unmarshal(buf, ct); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-oauth-client_token", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-client-token").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", ct).WithField("tag", fmt.Sprintf("%s-oauth-client_token", tag)).Debug()
+	goo_log.WithField("result", ct).WithTag(tag, "oauth-client-token").Debug()
 
 	if ct.Data.ErrorCode != 0 {
 		err = errors.New(ct.Data.Description)
@@ -189,19 +224,19 @@ func (o *oauth) refreshAccessToken(refreshToken, baseUrl string) (rt *RefreshTok
 	params.Add("refresh_token", refreshToken)
 
 	urlStr := fmt.Sprintf("%s/oauth/refresh_token/?%s", baseUrl, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-oauth-refresh_token", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "oauth-refresh-token").Debug()
 
 	var buf []byte
 	if buf, err = goo_http_request.Get(urlStr); err != nil {
-		goo_log.WithField("tag", fmt.Sprintf("%s-oauth-refresh_token", tag)).Error(err.Error())
+		goo_log.WithTag(tag, "oauth-refresh-token").Error(err)
 		return
 	}
 	if err := json.Unmarshal(buf, rt); err != nil {
-		goo_log.WithField("result", string(buf)).WithField("tag", fmt.Sprintf("%s-oauth-refresh_token", tag)).Error(err.Error())
+		goo_log.WithField("result", string(buf)).WithTag(tag, "oauth-refresh-token").Error(err)
 		return
 	}
 
-	goo_log.WithField("result", rt).WithField("tag", fmt.Sprintf("%s-oauth-refresh_token", tag)).Debug()
+	goo_log.WithField("result", rt).WithTag(tag, "oauth-refresh-token").Debug()
 
 	if rt.Data.ErrorCode != 0 {
 		err = errors.New(rt.Data.Description)
@@ -237,6 +272,6 @@ func (o *oauth) AuthorizeV2(redirectUri string) string {
 	params.Add("state", goo_utils.NonceStr()) // 用于保持请求和回调状态，授权请求后会原样返回给接入方,如果是App则不用传该参数
 
 	urlStr := fmt.Sprintf("%s/oauth/authorize/v2/?%s", base_url_aweme, params.Encode())
-	goo_log.WithField("url", urlStr).WithField("tag", fmt.Sprintf("%s-oauth-authorize-v2", tag)).Debug()
+	goo_log.WithField("url", urlStr).WithTag(tag, "oauth-authorize-v2").Debug()
 	return urlStr
 }
